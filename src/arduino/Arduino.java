@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import com.fazecast.jSerialComm.*;
+import model.SerialMesage;
 import java.util.ArrayList;
 
 
@@ -68,7 +69,7 @@ public class Arduino {
 	}
 	
 	
-	public ArrayList<String> serialRead(ArrayList<String> lista){
+	public ArrayList<SerialMesage> serialRead(ArrayList<SerialMesage> lista){
 		comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
 
 		Scanner in = new Scanner(comPort.getInputStream());
@@ -76,7 +77,7 @@ public class Arduino {
 		{
 		   while(in.hasNextLine()){
                       String tmp = in.nextLine();
-		      lista.add("<<: "+tmp);
+		      lista.add(new SerialMesage(tmp));
                    }
 		   in.close();
 		} catch (Exception e) { e.printStackTrace(); }

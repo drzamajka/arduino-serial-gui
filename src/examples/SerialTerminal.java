@@ -4,23 +4,41 @@
  */
 package examples;
 
+import model.NewThread;
+import model.SerialMesage;
 import arduino.Arduino;
 import arduino.PortDropdownMenu;
+import com.formdev.flatlaf.IntelliJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatArcOrangeIJTheme;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -59,8 +77,8 @@ public class SerialTerminal extends javax.swing.JFrame {
 
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
         btnOff = new javax.swing.JButton();
         btnOn = new javax.swing.JButton();
         btnRefresh = new javax.swing.JButton();
@@ -72,9 +90,19 @@ public class SerialTerminal extends javax.swing.JFrame {
         btnWyslij = new javax.swing.JButton();
         portList = new arduino.PortDropdownMenu();
 
-        jMenu1.setText("File");
+        this.setJMenuBar(jMenuBar1);
 
-        jMenuItem1.setText("jMenuItem1");
+        jMenu1.setText("Terminal");
+
+        jCheckBoxMenuItem1.setText("Show timestamp");
+        jCheckBoxMenuItem1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jCheckBoxMenuItem1StateChanged(evt);
+            }
+        });
+        jMenu1.add(jCheckBoxMenuItem1);
+
+        jMenuItem1.setText("Export data");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem1ActionPerformed(evt);
@@ -84,12 +112,10 @@ public class SerialTerminal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
-        jMenuBar1.add(jMenu2);
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Arduino serial gui");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        setIconImage(loadImageIcon());
         setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(500, 600));
         setPreferredSize(new java.awt.Dimension(500, 600));
@@ -110,7 +136,7 @@ public class SerialTerminal extends javax.swing.JFrame {
             }
         });
 
-        btnRefresh.setText("Odśwież");
+        btnRefresh.setText("Refresh");
         btnRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRefreshActionPerformed(evt);
@@ -124,9 +150,10 @@ public class SerialTerminal extends javax.swing.JFrame {
             }
         });
 
+        jList1.setCellRenderer(new SerialMesageRenderer());
         jScrollPane1.setViewportView(jList1);
 
-        czysc.setText("Wyczyść");
+        czysc.setText("Clear");
         czysc.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 czyscActionPerformed(evt);
@@ -140,7 +167,7 @@ public class SerialTerminal extends javax.swing.JFrame {
             }
         });
 
-        btnWyslij.setText("Wyślij");
+        btnWyslij.setText("Send");
         btnWyslij.setEnabled(false);
         btnWyslij.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -161,7 +188,7 @@ public class SerialTerminal extends javax.swing.JFrame {
                         .addComponent(btnRefresh)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(connectButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 105, Short.MAX_VALUE)
                         .addComponent(btnOn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnOff))
@@ -222,10 +249,9 @@ public class SerialTerminal extends javax.swing.JFrame {
 					 btnRefresh.setEnabled(false);
                                          btnWyslij.setEnabled(true);
                                          textField.setEnabled(true);
-                                        odbieraczKomunikatow = new NewThread(100){
+                                        odbieraczKomunikatow = new NewThread(0){
                                             @Override
                                             public void work(){
-                                                int size = lista.size();
                                                 lista = arduino.serialRead(lista);
                                             }
                                         };
@@ -234,14 +260,22 @@ public class SerialTerminal extends javax.swing.JFrame {
                                         aktualizatorListy = new NewThread(400){
                                             @Override
                                             public void work(){
-                                                Object[] strings = lista.toArray();
-                                                jList1.setModel(new javax.swing.AbstractListModel<String>() {
-                                                    @Override
-                                                    public int getSize() { return strings.length; }
-                                                    @Override
-                                                    public String getElementAt(int i) { return strings[strings.length-1-i]+""; }
-                                                });
-
+                                                if(jList1.getModel().getSize() != lista.size()){
+                                                    int ofset = lista.size() - jList1.getModel().getSize();
+                                                    int[] selectedIds = jList1.getSelectedIndices();
+                                                    for(int i=0; i<selectedIds.length; i++){
+                                                        selectedIds[i] = selectedIds[i] + ofset;
+                                                    }
+                                                    Object[] serialMesageList = lista.toArray();
+                                                    jList1.setModel(new AbstractListModel<SerialMesage>() {
+                                                        @Override
+                                                        public int getSize() { return serialMesageList.length; }
+                                                        @Override
+                                                        public SerialMesage getElementAt(int i) { return (SerialMesage)serialMesageList[serialMesageList.length-1-i]; }
+                                                        
+                                                    });
+                                                    jList1.setSelectedIndices(selectedIds);
+                                                }
                                             }
                                         };
                                         aktualizatorListy.setName("Aktualizator");
@@ -266,18 +300,12 @@ public class SerialTerminal extends javax.swing.JFrame {
 
     private void czyscActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_czyscActionPerformed
         lista.clear();
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            @Override
-            public int getSize() { return 0; }
-            @Override
-            public String getElementAt(int i) { return "";}
-        });
     }//GEN-LAST:event_czyscActionPerformed
 
     private void btnWyslijActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWyslijActionPerformed
         String tekst = textField.getText();
         textField.setText("");
-        lista.add(">>: "+tekst);
+        lista.add(new SerialMesage(true, tekst));
         arduino.serialWrite(tekst+"\n");
     }//GEN-LAST:event_btnWyslijActionPerformed
 
@@ -285,63 +313,94 @@ public class SerialTerminal extends javax.swing.JFrame {
         if(evt.getKeyCode() == 10){
             String tekst = textField.getText();
             textField.setText("");
-            lista.add(">>: "+tekst);
+            lista.add(new SerialMesage(true, tekst));
             arduino.serialWrite(tekst+"\n");
         }
     }//GEN-LAST:event_textFieldKeyPressed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
+        JFileChooser fc = new JFileChooser(new File(System.getProperty("user.home")+"\\Desktop"));
+        fc.setSelectedFile(new File("SerialLog.txt"));
+        FileNameExtensionFilter filtr = new FileNameExtensionFilter("TXT", "txt");
+        fc.setFileFilter(filtr);
+        
+        int returnVal = fc.showSaveDialog(SerialTerminal.this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            try {
+                FileWriter fileWriter = new FileWriter(file);
+                try (PrintWriter printWriter = new PrintWriter(fileWriter)) {
+                    for(SerialMesage serialMesage : lista){
+                        printWriter.println(serialMesage.toString());
+                    }
+                    printWriter.close();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(SerialTerminal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
+        
+//        String str = "Hello";
+//        String fileName = "Hello";
+//        FileWriter fileWriter;
+//        try {
+//            fileWriter = new FileWriter(fileName);
+//            try (PrintWriter printWriter = new PrintWriter(fileWriter)) {
+//                printWriter.print("Some String");
+//            }
+//        } catch (IOException ex) {
+//            Logger.getLogger(SerialTerminal.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        
+
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jCheckBoxMenuItem1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1StateChanged
+        ((SerialMesageRenderer)jList1.getCellRenderer()).withDate = jCheckBoxMenuItem1.getState();
+        jList1.repaint();
+    }//GEN-LAST:event_jCheckBoxMenuItem1StateChanged
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(SerialTerminal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(SerialTerminal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SerialTerminal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SerialTerminal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
+        try {  
+            javax.swing.UIManager.setLookAndFeel(new FlatArcOrangeIJTheme());
+        }catch(UnsupportedLookAndFeelException e){
+        }
+
+                
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new SerialTerminal().setVisible(true);
             }
         });
-    }
-    
+    }   
 
-    public JList<String> getjList1() {
+    public JList<SerialMesage> getjList1() {
         return jList1;
     }
 
-    public void setjList1(JList<String> jList1) {
+    public void setjList1(JList<SerialMesage> jList1) {
         this.jList1 = jList1;
     }
     
-    
+    private Image  loadImageIcon() {
+        String path = "/resources/icon.png";
+        URL imgURL = getClass().getResource(path);
+        
+        if (imgURL != null) {
+            return new ImageIcon(imgURL).getImage();
+        } else {
+            return null;
+        }
+    }
 
     private int[] sprawdzone;
-    private ArrayList<String> lista;
+    private ArrayList<SerialMesage> lista;
     private Arduino arduino;
     private NewThread odbieraczKomunikatow;
     private NewThread aktualizatorListy;
@@ -352,9 +411,9 @@ public class SerialTerminal extends javax.swing.JFrame {
     private javax.swing.JButton btnWyslij;
     private javax.swing.JButton connectButton;
     private javax.swing.JButton czysc;
-    private javax.swing.JList<String> jList1;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
+    private javax.swing.JList<SerialMesage> jList1;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;

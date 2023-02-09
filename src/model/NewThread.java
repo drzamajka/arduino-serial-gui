@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package examples;
+package model;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -14,17 +14,11 @@ import java.util.logging.Logger;
  */
 public class NewThread extends Thread {
     private final int duration;
-    
     private Boolean pentla = true;
-    int counter = 0;
     
-
-    NewThread(int duration) {
+    public NewThread(int duration) {
         this.duration = duration;
     }
-    
-
-
     
     @Override
     public void run() {
