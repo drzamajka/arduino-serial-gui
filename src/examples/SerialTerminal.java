@@ -118,9 +118,8 @@ public class SerialTerminal extends javax.swing.JFrame {
         setIconImage(loadImageIcon());
         setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(500, 600));
-        setPreferredSize(new java.awt.Dimension(500, 600));
 
-        btnOff.setText("btnOff");
+        btnOff.setText("lock");
         btnOff.setEnabled(false);
         btnOff.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -128,7 +127,7 @@ public class SerialTerminal extends javax.swing.JFrame {
             }
         });
 
-        btnOn.setText("btnOn");
+        btnOn.setText("umlock");
         btnOn.setEnabled(false);
         btnOn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -227,11 +226,14 @@ public class SerialTerminal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnOnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOnActionPerformed
-        
+        UnlockDialog udialog = new UnlockDialog();
+        udialog.setLocationRelativeTo(this);
+        udialog.setVisible(true);
     }//GEN-LAST:event_btnOnActionPerformed
 
     private void btnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOffActionPerformed
-        
+        lista.add(new SerialMesage(true, "1001"));
+        arduino.serialWrite("1001\n");
     }//GEN-LAST:event_btnOffActionPerformed
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
@@ -244,8 +246,8 @@ public class SerialTerminal extends javax.swing.JFrame {
 				 if(arduino.openConnection()){
 					 connectButton.setText("Disconnect");
 					 portList.setEnabled(false);
-					 //btnOn.setEnabled(true);
-					 //btnOff.setEnabled(true);
+					 btnOn.setEnabled(true);
+					 btnOff.setEnabled(true);
 					 btnRefresh.setEnabled(false);
                                          btnWyslij.setEnabled(true);
                                          textField.setEnabled(true);
@@ -287,9 +289,9 @@ public class SerialTerminal extends javax.swing.JFrame {
                                         aktualizatorListy.setPentla(false);
 					connectButton.setText("Connect");
 					portList.setEnabled(true);
-					//btnOn.setEnabled(false);
+					btnOn.setEnabled(false);
 					btnRefresh.setEnabled(true);
-					//btnOff.setEnabled(false);
+					btnOff.setEnabled(false);
                                         btnWyslij.setEnabled(false);
                                         textField.setEnabled(false);
                                         arduino.closeConnection();

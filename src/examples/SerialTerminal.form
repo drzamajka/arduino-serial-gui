@@ -50,9 +50,6 @@
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
       <Dimension value="[500, 600]"/>
     </Property>
-    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[500, 600]"/>
-    </Property>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -130,7 +127,7 @@
   <SubComponents>
     <Component class="javax.swing.JButton" name="btnOff">
       <Properties>
-        <Property name="text" type="java.lang.String" value="btnOff"/>
+        <Property name="text" type="java.lang.String" value="lock"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
@@ -139,7 +136,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnOn">
       <Properties>
-        <Property name="text" type="java.lang.String" value="btnOn"/>
+        <Property name="text" type="java.lang.String" value="umlock"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
