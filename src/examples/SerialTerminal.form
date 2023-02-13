@@ -24,6 +24,15 @@
                 <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="jCheckBoxMenuItem1StateChanged"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="jCheckBoxMenuItem2">
+              <Properties>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="Show CAN emit id"/>
+              </Properties>
+              <Events>
+                <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="jCheckBoxMenuItem2StateChanged"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Export data"/>
@@ -127,7 +136,7 @@
   <SubComponents>
     <Component class="javax.swing.JButton" name="btnOff">
       <Properties>
-        <Property name="text" type="java.lang.String" value="lock"/>
+        <Property name="text" type="java.lang.String" value="Lock"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
@@ -136,7 +145,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnOn">
       <Properties>
-        <Property name="text" type="java.lang.String" value="umlock"/>
+        <Property name="text" type="java.lang.String" value="Unlock"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>

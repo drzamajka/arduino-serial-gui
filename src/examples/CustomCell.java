@@ -26,35 +26,54 @@ public class CustomCell extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
         jLabelOperation = new javax.swing.JLabel();
         jLabelMesage = new javax.swing.JLabel();
+        jLabelEmitId = new javax.swing.JLabel();
+        jLabelSpace = new javax.swing.JLabel();
+
+        jLabel1.setText("jLabel1");
 
         jLabelOperation.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabelOperation.setText("Data");
 
         jLabelMesage.setText("wiadomość");
 
+        jLabelEmitId.setText("id");
+        jLabelEmitId.setEnabled(false);
+
+        jLabelSpace.setText(":");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(jLabelOperation)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabelMesage))
+                .addComponent(jLabelEmitId)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelSpace)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelMesage)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabelOperation)
-                .addComponent(jLabelMesage, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jLabelEmitId)
+                .addComponent(jLabelMesage, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabelSpace))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    public javax.swing.JLabel jLabelEmitId;
     public javax.swing.JLabel jLabelMesage;
     public javax.swing.JLabel jLabelOperation;
+    public javax.swing.JLabel jLabelSpace;
     // End of variables declaration//GEN-END:variables
 }

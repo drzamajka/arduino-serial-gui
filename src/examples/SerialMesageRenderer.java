@@ -16,36 +16,44 @@ import model.SerialMesage;
  *
  * @author drzam
  */
-public class SerialMesageRenderer  extends CustomCell implements ListCellRenderer<SerialMesage> {
-    
+public class SerialMesageRenderer extends CustomCell implements ListCellRenderer<SerialMesage> {
+
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
     public boolean withDate;
+    public boolean withEmitId;
 
     public SerialMesageRenderer() {
         setOpaque(true);
         withDate = false;
+        withEmitId = true;
     }
 
     @Override
     public Component getListCellRendererComponent(JList<? extends SerialMesage> list, SerialMesage serialMesage, int index,
             boolean isSelected, boolean cellHasFocus) {
 
-        String mesage = serialMesage.getMesage();
-
-
-        jLabelMesage.setText(mesage);
+        jLabelMesage.setText(serialMesage.getMesage());
         
-        String stringOperation = "";
-        if(withDate){
-            stringOperation += simpleDateFormat.format(serialMesage.getReciveTime())+" ";
-        }
-        if(serialMesage.isSendet()){
-            stringOperation += ">>";
+        if(withEmitId && serialMesage.getEmitId() != null){
+            jLabelEmitId.setText(serialMesage.getEmitId());
+            this.jLabelEmitId.setVisible(true);
+            this.jLabelSpace.setVisible(true);
         }
         else{
+            this.jLabelEmitId.setVisible(false);
+            this.jLabelSpace.setVisible(false);
+        }
+
+        String stringOperation = "";
+        if (withDate) {
+            stringOperation += simpleDateFormat.format(serialMesage.getReciveTime()) + " ";
+        }
+        if (serialMesage.isSendet()) {
+            stringOperation += ">>";
+        } else {
             stringOperation += "<<";
         }
-        
+
         jLabelOperation.setText(stringOperation);
 
         if (isSelected) {
