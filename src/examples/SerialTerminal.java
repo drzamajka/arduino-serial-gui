@@ -81,8 +81,7 @@ public class SerialTerminal extends javax.swing.JFrame {
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         jCheckBoxMenuItem2 = new javax.swing.JCheckBoxMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
-        btnOff = new javax.swing.JButton();
-        btnOn = new javax.swing.JButton();
+        btnDiag = new javax.swing.JButton();
         btnRefresh = new javax.swing.JButton();
         connectButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -130,19 +129,11 @@ public class SerialTerminal extends javax.swing.JFrame {
         setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(500, 600));
 
-        btnOff.setText("Lock");
-        btnOff.setEnabled(false);
-        btnOff.addActionListener(new java.awt.event.ActionListener() {
+        btnDiag.setText("PSA diag");
+        btnDiag.setEnabled(false);
+        btnDiag.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOffActionPerformed(evt);
-            }
-        });
-
-        btnOn.setText("Unlock");
-        btnOn.setEnabled(false);
-        btnOn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOnActionPerformed(evt);
+                btnDiagActionPerformed(evt);
             }
         });
 
@@ -198,10 +189,8 @@ public class SerialTerminal extends javax.swing.JFrame {
                         .addComponent(btnRefresh)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(connectButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 105, Short.MAX_VALUE)
-                        .addComponent(btnOn)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnOff))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 177, Short.MAX_VALUE)
+                        .addComponent(btnDiag))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -219,8 +208,7 @@ public class SerialTerminal extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnRefresh)
                     .addComponent(connectButton)
-                    .addComponent(btnOn)
-                    .addComponent(btnOff)
+                    .addComponent(btnDiag)
                     .addComponent(portList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -236,15 +224,10 @@ public class SerialTerminal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnOnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOnActionPerformed
+    private void btnDiagActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDiagActionPerformed
         udialog.setLocationRelativeTo(this);
         udialog.setVisible(true);
-    }//GEN-LAST:event_btnOnActionPerformed
-
-    private void btnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOffActionPerformed
-        lista.add(new SerialMesage(true, "1001"));
-        arduino.serialWrite("1001\n");
-    }//GEN-LAST:event_btnOffActionPerformed
+    }//GEN-LAST:event_btnDiagActionPerformed
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
         portList.refreshMenu();
@@ -256,8 +239,7 @@ public class SerialTerminal extends javax.swing.JFrame {
             if (arduino.openConnection()) {
                 connectButton.setText("Disconnect");
                 portList.setEnabled(false);
-                btnOn.setEnabled(true);
-                btnOff.setEnabled(true);
+                btnDiag.setEnabled(true);
                 btnRefresh.setEnabled(false);
                 btnWyslij.setEnabled(true);
                 textField.setEnabled(true);
@@ -303,9 +285,8 @@ public class SerialTerminal extends javax.swing.JFrame {
             aktualizatorListy.setPentla(false);
             connectButton.setText("Connect");
             portList.setEnabled(true);
-            btnOn.setEnabled(false);
+            btnDiag.setEnabled(false);
             btnRefresh.setEnabled(true);
-            btnOff.setEnabled(false);
             btnWyslij.setEnabled(false);
             textField.setEnabled(false);
             arduino.closeConnection();
@@ -416,8 +397,7 @@ public class SerialTerminal extends javax.swing.JFrame {
     private NewThread aktualizatorListy;
     private UnlockDialog udialog;
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnOff;
-    private javax.swing.JButton btnOn;
+    private javax.swing.JButton btnDiag;
     private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnWyslij;
     private javax.swing.JButton connectButton;
