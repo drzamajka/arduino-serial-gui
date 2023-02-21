@@ -98,6 +98,7 @@ public class UnlockDialog extends javax.swing.JFrame {
         setTitle("PSA diag");
         setLocationByPlatform(true);
         setName("Unlock dialog"); // NOI18N
+        setResizable(false);
         setType(java.awt.Window.Type.POPUP);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("ECU unlock"));
@@ -151,7 +152,6 @@ public class UnlockDialog extends javax.swing.JFrame {
             ex.printStackTrace();
         }
         jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField1.setText("EC001699");
         jTextField1.setToolTipText("");
 
         try {
@@ -160,7 +160,6 @@ public class UnlockDialog extends javax.swing.JFrame {
             ex.printStackTrace();
         }
         jTextField3.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField3.setText("7F9C4FDC");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
