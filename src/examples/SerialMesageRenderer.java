@@ -33,7 +33,7 @@ public class SerialMesageRenderer  extends CustomCell implements ListCellRendere
         String mesage = serialMesage.getMesage();
 
 
-        jLabelMesage.setText(mesage);
+        jLabelMesage.setText("FRAME:"+ serialMesage.getFrameId() + ";" + mesage);
         
         String stringOperation = "";
         if(withDate){

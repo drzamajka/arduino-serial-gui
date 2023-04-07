@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,6 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import model.SerialMesageIdComparator;
 
 /**
  *
@@ -52,18 +54,17 @@ public class SerialTerminal extends javax.swing.JFrame {
     public SerialTerminal() {
         initComponents();
         portList.refreshMenu();
-        
+
         lista = new ArrayList();
         sprawdzone = new int[4];
         sprawdzone[0] = 0;
         sprawdzone[1] = 0;
         sprawdzone[2] = 0;
         sprawdzone[3] = 0;
-        
-        aktualizatorListy = new NewThread(600);
-        odbieraczKomunikatow = new NewThread(100);
 
-        
+        aktualizatorListy = new NewThread(400);
+        odbieraczKomunikatow = new NewThread(10);
+
     }
 
     /**
@@ -79,8 +80,6 @@ public class SerialTerminal extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
-        btnOff = new javax.swing.JButton();
-        btnOn = new javax.swing.JButton();
         btnRefresh = new javax.swing.JButton();
         connectButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -118,23 +117,6 @@ public class SerialTerminal extends javax.swing.JFrame {
         setIconImage(loadImageIcon());
         setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(500, 600));
-        setPreferredSize(new java.awt.Dimension(500, 600));
-
-        btnOff.setText("btnOff");
-        btnOff.setEnabled(false);
-        btnOff.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOffActionPerformed(evt);
-            }
-        });
-
-        btnOn.setText("btnOn");
-        btnOn.setEnabled(false);
-        btnOn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOnActionPerformed(evt);
-            }
-        });
 
         btnRefresh.setText("Refresh");
         btnRefresh.addActionListener(new java.awt.event.ActionListener() {
@@ -188,11 +170,8 @@ public class SerialTerminal extends javax.swing.JFrame {
                         .addComponent(btnRefresh)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(connectButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 105, Short.MAX_VALUE)
-                        .addComponent(btnOn)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnOff))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(czysc))
@@ -209,8 +188,6 @@ public class SerialTerminal extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnRefresh)
                     .addComponent(connectButton)
-                    .addComponent(btnOn)
-                    .addComponent(btnOff)
                     .addComponent(portList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -226,75 +203,72 @@ public class SerialTerminal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnOnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOnActionPerformed
-        
-    }//GEN-LAST:event_btnOnActionPerformed
-
-    private void btnOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOffActionPerformed
-        
-    }//GEN-LAST:event_btnOffActionPerformed
-
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
         portList.refreshMenu();
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
-        if(connectButton.getText().equals("Connect")){
-				 arduino = new Arduino(portList.getSelectedItem().toString(),115200);
-				 if(arduino.openConnection()){
-					 connectButton.setText("Disconnect");
-					 portList.setEnabled(false);
-					 //btnOn.setEnabled(true);
-					 //btnOff.setEnabled(true);
-					 btnRefresh.setEnabled(false);
-                                         btnWyslij.setEnabled(true);
-                                         textField.setEnabled(true);
-                                        odbieraczKomunikatow = new NewThread(0){
-                                            @Override
-                                            public void work(){
-                                                lista = arduino.serialRead(lista);
-                                            }
-                                        };
-                                        odbieraczKomunikatow.setName("Odbieracz");
-                                        odbieraczKomunikatow.start();  
-                                        aktualizatorListy = new NewThread(400){
-                                            @Override
-                                            public void work(){
-                                                if(jList1.getModel().getSize() != lista.size()){
-                                                    int ofset = lista.size() - jList1.getModel().getSize();
-                                                    int[] selectedIds = jList1.getSelectedIndices();
-                                                    for(int i=0; i<selectedIds.length; i++){
-                                                        selectedIds[i] = selectedIds[i] + ofset;
-                                                    }
-                                                    Object[] serialMesageList = lista.toArray();
-                                                    jList1.setModel(new AbstractListModel<SerialMesage>() {
-                                                        @Override
-                                                        public int getSize() { return serialMesageList.length; }
-                                                        @Override
-                                                        public SerialMesage getElementAt(int i) { return (SerialMesage)serialMesageList[serialMesageList.length-1-i]; }
-                                                        
-                                                    });
-                                                    jList1.setSelectedIndices(selectedIds);
-                                                }
-                                            }
-                                        };
-                                        aktualizatorListy.setName("Aktualizator");
-                                        aktualizatorListy.start();
-				 }
-				}
-				else {
-                                        odbieraczKomunikatow.setPentla(false);
-                                        aktualizatorListy.setPentla(false);
-					connectButton.setText("Connect");
-					portList.setEnabled(true);
-					//btnOn.setEnabled(false);
-					btnRefresh.setEnabled(true);
-					//btnOff.setEnabled(false);
-                                        btnWyslij.setEnabled(false);
-                                        textField.setEnabled(false);
-                                        arduino.closeConnection();
-                                        
-				}
+        if (connectButton.getText().equals("Connect")) {
+            arduino = new Arduino(portList.getSelectedItem().toString(), 115200);
+            if (arduino.openConnection()) {
+                connectButton.setText("Disconnect");
+                portList.setEnabled(false);
+                btnRefresh.setEnabled(false);
+                btnWyslij.setEnabled(true);
+                textField.setEnabled(true);
+                odbieraczKomunikatow = new NewThread(0) {
+                    @Override
+                    public void work() {
+                        lista = arduino.serialRead(lista);
+                    }
+                };
+                odbieraczKomunikatow.setName("Odbieracz");
+                odbieraczKomunikatow.start();
+                aktualizatorListy = new NewThread(50) {
+                    @Override
+                    public void work() {
+                        ArrayList<SerialMesage> unixe = new ArrayList<>();
+                        ArrayList<Integer> zawiera = new ArrayList<>();
+
+                        for (int i = lista.size(); i-- > 0;) {
+                            SerialMesage tmp = lista.get(i);
+                            if(!zawiera.contains(tmp.getFrameId())){
+                                zawiera.add(tmp.getFrameId());
+                                unixe.add(tmp);
+                            }
+                        }
+
+                        unixe.sort(new SerialMesageIdComparator());
+                        Object[] serialMesageList = unixe.toArray();
+                        jList1.setModel(new AbstractListModel<SerialMesage>() {
+                            @Override
+                            public int getSize() {
+                                return serialMesageList.length;
+                            }
+
+                            @Override
+                            public SerialMesage getElementAt(int i) {
+                                return (SerialMesage) serialMesageList[i];
+                            }
+
+                        });
+
+                    }
+                };
+                aktualizatorListy.setName("Aktualizator");
+                aktualizatorListy.start();
+            }
+        } else {
+            odbieraczKomunikatow.setPentla(false);
+            aktualizatorListy.setPentla(false);
+            connectButton.setText("Connect");
+            portList.setEnabled(true);
+            btnRefresh.setEnabled(true);
+            btnWyslij.setEnabled(false);
+            textField.setEnabled(false);
+            arduino.closeConnection();
+
+        }
 
     }//GEN-LAST:event_connectButtonActionPerformed
 
@@ -306,31 +280,31 @@ public class SerialTerminal extends javax.swing.JFrame {
         String tekst = textField.getText();
         textField.setText("");
         lista.add(new SerialMesage(true, tekst));
-        arduino.serialWrite(tekst+"\n");
+        arduino.serialWrite(tekst + "\n");
     }//GEN-LAST:event_btnWyslijActionPerformed
 
     private void textFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldKeyPressed
-        if(evt.getKeyCode() == 10){
+        if (evt.getKeyCode() == 10) {
             String tekst = textField.getText();
             textField.setText("");
             lista.add(new SerialMesage(true, tekst));
-            arduino.serialWrite(tekst+"\n");
+            arduino.serialWrite(tekst + "\n");
         }
     }//GEN-LAST:event_textFieldKeyPressed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        JFileChooser fc = new JFileChooser(new File(System.getProperty("user.home")+"\\Desktop"));
+        JFileChooser fc = new JFileChooser(new File(System.getProperty("user.home") + "\\Desktop"));
         fc.setSelectedFile(new File("SerialLog.txt"));
         FileNameExtensionFilter filtr = new FileNameExtensionFilter("TXT", "txt");
         fc.setFileFilter(filtr);
-        
+
         int returnVal = fc.showSaveDialog(SerialTerminal.this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             try {
                 FileWriter fileWriter = new FileWriter(file);
-                try (PrintWriter printWriter = new PrintWriter(fileWriter)) {
-                    for(SerialMesage serialMesage : lista){
+                try ( PrintWriter printWriter = new PrintWriter(fileWriter)) {
+                    for (SerialMesage serialMesage : lista) {
                         printWriter.println(serialMesage.toString());
                     }
                     printWriter.close();
@@ -338,26 +312,13 @@ public class SerialTerminal extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(SerialTerminal.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
         }
-        
-//        String str = "Hello";
-//        String fileName = "Hello";
-//        FileWriter fileWriter;
-//        try {
-//            fileWriter = new FileWriter(fileName);
-//            try (PrintWriter printWriter = new PrintWriter(fileWriter)) {
-//                printWriter.print("Some String");
-//            }
-//        } catch (IOException ex) {
-//            Logger.getLogger(SerialTerminal.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        
 
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jCheckBoxMenuItem1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1StateChanged
-        ((SerialMesageRenderer)jList1.getCellRenderer()).withDate = jCheckBoxMenuItem1.getState();
+        ((SerialMesageRenderer) jList1.getCellRenderer()).withDate = jCheckBoxMenuItem1.getState();
         jList1.repaint();
     }//GEN-LAST:event_jCheckBoxMenuItem1StateChanged
 
@@ -366,19 +327,18 @@ public class SerialTerminal extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
 
-        try {  
+        try {
             javax.swing.UIManager.setLookAndFeel(new FlatArcOrangeIJTheme());
-        }catch(UnsupportedLookAndFeelException e){
+        } catch (UnsupportedLookAndFeelException e) {
         }
 
-                
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new SerialTerminal().setVisible(true);
             }
         });
-    }   
+    }
 
     public JList<SerialMesage> getjList1() {
         return jList1;
@@ -387,11 +347,11 @@ public class SerialTerminal extends javax.swing.JFrame {
     public void setjList1(JList<SerialMesage> jList1) {
         this.jList1 = jList1;
     }
-    
-    private Image  loadImageIcon() {
+
+    private Image loadImageIcon() {
         String path = "/resources/icon.png";
         URL imgURL = getClass().getResource(path);
-        
+
         if (imgURL != null) {
             return new ImageIcon(imgURL).getImage();
         } else {
@@ -405,8 +365,6 @@ public class SerialTerminal extends javax.swing.JFrame {
     private NewThread odbieraczKomunikatow;
     private NewThread aktualizatorListy;
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnOff;
-    private javax.swing.JButton btnOn;
     private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnWyslij;
     private javax.swing.JButton connectButton;

@@ -12,22 +12,46 @@ import java.util.Date;
  * @author drzam
  */
 public class SerialMesage {
-    
+
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
     private final boolean sendet;
+    private final int frameId;
+    private final int frameLen;
     private final String mesage;
     private final Date reciveTime;
 
     public SerialMesage(String mesage) {
         this.sendet = false;
-        this.mesage = mesage;
+
+        if (mesage.startsWith("FRAME:")) {
+            String[] mesageArray = mesage.split(";");
+            this.frameId = Integer.parseInt(mesageArray[0].substring(6));
+            this.frameLen = Integer.parseInt(mesageArray[1]);
+            this.mesage = mesageArray[2];
+
+        } else {
+            this.frameId = 0;
+            this.frameLen = 0;
+            this.mesage = mesage;
+        }
+
         this.reciveTime = new Date();
+
     }
-    
+
     public SerialMesage(boolean sendet, String mesage) {
         this.sendet = sendet;
-        this.mesage = mesage;
-        this.reciveTime = new Date();;
+        if (mesage.startsWith("FRAME:")) {
+            String[] mesageArray = mesage.split(";");
+            this.frameId = Integer.parseInt(mesageArray[0].substring(6));
+            this.frameLen = Integer.parseInt(mesageArray[1]);
+            this.mesage = mesageArray[2];
+        } else {
+            this.frameId = 0;
+            this.frameLen = 0;
+            this.mesage = mesage;
+        }
+        this.reciveTime = new Date();
     }
 
     public boolean isSendet() {
@@ -42,25 +66,26 @@ public class SerialMesage {
         return reciveTime;
     }
 
+    public int getFrameId() {
+        return frameId;
+    }
+
+    public int getFrameLen() {
+        return frameLen;
+    }
 
     @Override
     public String toString() {
-        String output = simpleDateFormat.format(reciveTime)+" ";
+        String output = simpleDateFormat.format(reciveTime) + " ";
 
-        if(sendet){
+        if (sendet) {
             output += ">>";
-        }
-        else{
+        } else {
             output += "<<";
         }
-        
-        output += " "+mesage;
+
+        output += "FRAME:" + frameId + ";" + mesage;
         return output;
     }
-    
-    
-    
-    
-    
-    
+
 }
